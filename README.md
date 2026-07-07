@@ -1,4 +1,4 @@
-# R-search
+# Argus
 
 A command-line search tool written in Rust that recursively scans directories and finds matching text in files.
 
@@ -25,6 +25,5 @@ cargo run -- "<query>" <directory> -c
 
 ## Future Improvements
 
-- Add multithreaded file processing for faster search
 - Support regular expressions for advanced pattern matching
 - Ignore files using .gitignore rules
