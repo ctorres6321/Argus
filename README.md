@@ -25,6 +25,5 @@ cargo run -- "<query>" <directory> -c
 
 ## Future Improvements
 
-- Add multithreaded file processing for faster search
 - Support regular expressions for advanced pattern matching
 - Ignore files using .gitignore rules
