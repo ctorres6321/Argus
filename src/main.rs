@@ -1,5 +1,8 @@
 mod cli;
+mod walker;
 mod search;
+mod output;
+
 use clap::Parser;
 use cli::Args;
 

@@ -21,11 +21,11 @@ pub struct Args {
 }
 
 impl Args {
-    pub fn _getQuery(self) -> String{
-      return self.query;
+    pub fn _get_query(self) -> String{
+      self.query
     }
 
-    pub fn _getPath(self) -> String{
-        return self.path;
+    pub fn _get_path(self) -> String{
+        self.path
     }
 }
