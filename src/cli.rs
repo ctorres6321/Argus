@@ -15,24 +15,19 @@ pub struct Args {
     pub ignore_case: bool, 
 
     /// Enable regex support
-    #[arg(short = 'r', long)]
+    #[arg(short = 'E', long)]
     pub enable_regex: bool, 
 
-    /// Number of lines to search for after 
-    after: Option<usize>,
+    /// Number of lines to search for after match
+    #[arg(short = 'A', long)]
+    pub after: Option<usize>,
 
     /// Number of lines to search for before 
+    #[arg(short = 'B', long)]
     pub before: Option<usize>,
 
     /// Number of lines to search for context 
-    #[arg(short = 'c', default_value_t = 0)]
+    #[arg(short = 'C', default_value_t = 0)]
     pub context: usize,
-
-//  #[arg(short = 'a', long)]
-//  pub enable_context_after: bool, 
-
-    // Enables context for pattern matching (Prints N number of lines before the pattern was found)
-//  #[arg(short = 'b', long)]
-//  pub enable_context_before: bool, 
 
 }

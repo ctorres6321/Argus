@@ -2,10 +2,12 @@ pub mod literal;
 pub mod ignore_case;
 pub mod regex_search;
 pub mod fuzzy;
+pub mod context;
 
 use crate::cli::Args;
 use crate::output::{print_match, SearchResult};
 use crate::walker::collect_files;
+use context::Context;
 
 use regex::Regex;
 
@@ -19,6 +21,7 @@ pub enum SearchMode {
     Literal(String),
     IgnoreCase(String),
     Regex(Regex),
+    // Fuzzy searching not implemented yet so it's not matched yet
     Fuzzy(String),
 }
 
@@ -62,37 +65,20 @@ fn build_search_mode(args: &Args) -> SearchMode {
     }
 }
 
-fn build_context(lines: &[&str], match_index: usize, context: usize,) -> Vec<(usize, String)>{
-
-    // Prevents going out of bounds on LHS
-    let start = match_index.saturating_sub(context);
-
-    // Prevents going out of bounds on RHS
-    let end = (match_index + context + 1).min(lines.len());
-
-    let mut result = Vec::new();
-
-    for i in start..end {
-        result.push((i + 1, lines[i].to_string(),
-    ));
-    }
-    result
-}
-
-
 fn spawn_workers(
     worker_count: usize,
     mode: Arc<SearchMode>,
     path_receiver: Arc<Mutex<mpsc::Receiver<PathBuf>>>,
     result_sender: mpsc::Sender<SearchResult>,
-    context: usize,)
+    context: Context,)
     {
 
-    for _ in 0..worker_count{
+    for _ in 0..worker_count {
 
         let mode = Arc::clone(&mode);
         let path_receiver = Arc::clone(&path_receiver);
         let result_sender = result_sender.clone();
+        let context = context.clone();
 
         thread::spawn(move || {
 
@@ -123,8 +109,8 @@ fn spawn_workers(
                         path: path.display().to_string(),
 
                         match_line: line_number + 1,
-
-                        context: build_context(&lines, line_number, context),
+                        
+                        context: context.build(&lines, line_number),
                     };
 
                     let _ = result_sender.send(result);
@@ -151,9 +137,15 @@ pub fn run_search(args:&Args) -> io::Result<()> {
     let (result_sender, result_receiver) =
         mpsc::channel::<SearchResult>();
 
-    // Create workers
+    // Create context for workers
 
-    spawn_workers(4, Arc::clone(&mode), Arc::clone(&path_receiver), result_sender, args.context);
+    let context = Context::new(
+        args.context.max(args.before.unwrap_or(0)),
+        args.context.max(args.after.unwrap_or(0))
+    );
+
+    // Create workers
+    spawn_workers(4, Arc::clone(&mode), Arc::clone(&path_receiver), result_sender, context);
 
     // Send files
     let files = collect_files(&args.path);
