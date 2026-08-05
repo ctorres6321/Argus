@@ -18,11 +18,16 @@ pub struct Args {
     #[arg(short = 'r', long)]
     pub enable_regex: bool, 
 
-    /// Enables context for pattern matching (Prints N number of lines below and above the matched term)
-    #[arg(short = 'c', long)]
-    pub enable_context: bool, 
+    /// Number of lines to search for after 
+    after: Option<usize>,
 
-    // Enables context for pattern matching (Prints N number of lines after the pattern was found)
+    /// Number of lines to search for before 
+    pub before: Option<usize>,
+
+    /// Number of lines to search for context 
+    #[arg(short = 'c', default_value_t = 0)]
+    pub context: usize,
+
 //  #[arg(short = 'a', long)]
 //  pub enable_context_after: bool, 
 
@@ -30,14 +35,4 @@ pub struct Args {
 //  #[arg(short = 'b', long)]
 //  pub enable_context_before: bool, 
 
-}
-
-impl Args {
-    pub fn _get_query(self) -> String{
-      self.query
-    }
-
-    pub fn _get_path(self) -> String{
-        self.path
-    }
 }
